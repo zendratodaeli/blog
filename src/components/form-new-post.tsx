@@ -1,6 +1,7 @@
 "use client"
 
 import { FormData } from "@/types/blog"
+import { useSession } from "next-auth/react"
 import { ChangeEvent, SyntheticEvent, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
@@ -11,6 +12,9 @@ const inputClass = "w-full py-2 px-3 border border-gray-300 rounded-md focus:out
       title: '',
       content: ''
     })
+
+    const {data} = useSession();
+    console.log(data?.user);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement >) => {
     e.preventDefault();
