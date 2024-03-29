@@ -1,7 +1,9 @@
 "use client"
 
 import { FormData } from "@/types/blog"
+import axios from "axios"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { ChangeEvent, SyntheticEvent, useState } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
@@ -14,7 +16,7 @@ const inputClass = "w-full py-2 px-3 border border-gray-300 rounded-md focus:out
     })
 
     const {data} = useSession();
-    console.log(data?.user);
+    const router = useRouter();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement >) => {
     e.preventDefault();
@@ -25,9 +27,17 @@ const inputClass = "w-full py-2 px-3 border border-gray-300 rounded-md focus:out
     })
   }
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log(formData)
+    try{
+      const response = await axios.post('api/posts', formData);
+
+      if(response.status === 200) {
+        router.push(`/blogs/${response.data.newPost.id}`)
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
   
   return (
