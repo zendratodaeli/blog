@@ -1,17 +1,40 @@
 "use client"
 
-import React, { ChangeEvent, useState } from 'react'
+import axios from 'axios'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import React, { ChangeEvent, FC, useState } from 'react'
 
-export default function FormComment() {
-  const [comment, setComment] = useState<string>('')
+interface FormCommentProps {
+  postId: string
+}
+
+const FormComment: FC<FormCommentProps> = ({postId}) => {
+  const [comment, setComment] = useState<string>('');
+  const router = useRouter();
+  const {data} = useSession();
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value)
   }
 
-  const handleSubmitComment = () => {
-    console.log("Hello")
-  }
+
+  const handleSubmitComment = async () => {
+    if (comment.trim() !== '') {
+      try {
+        const newComment = await axios.post('/api/comments', {
+          postId,
+          text: comment,
+        });
+        if (newComment.status === 200) {
+          router.refresh();
+          setComment("")
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   return (
     <div>
@@ -27,10 +50,16 @@ export default function FormComment() {
           name='comment'
         />
 
-        <button onClick={handleSubmitComment} className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4
-        rounded-md mt-2 disabled:bg-gray-400
-        '>Submit Comment</button>
+        <button 
+          onClick={handleSubmitComment} 
+          className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4
+          rounded-md mt-2 disabled:bg-gray-400
+          '
+          disabled={!data?.user?.email}
+        >Submit Comment</button>
       </div>
     </div>
   )
 }
+
+export default FormComment;
