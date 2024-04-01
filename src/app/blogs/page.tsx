@@ -1,4 +1,3 @@
-import { post } from "@/data/post";
 import prisma from "@/libs/db";
 import Link from "next/link";
 
