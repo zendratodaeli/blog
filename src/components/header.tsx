@@ -4,6 +4,7 @@ import ButtonLogout from "./button-logout";
 
 export default async function Header() {
   const user = await getCurrentUser();
+  console.log(user)
 
   return (
     <header className="bg-blue-500 p-4">
